@@ -787,6 +787,62 @@ func newDataVarInfoFromC(cvalue *C.ImGuiDataVarInfo) *DataVarInfo {
 	return result
 }
 
+type DebugAllocEntry struct {
+	FieldFrameCount int32
+	FieldAllocCount int
+	FieldFreeCount  int
+}
+
+func (self DebugAllocEntry) handle() (result *C.ImGuiDebugAllocEntry, releaseFn func()) {
+	result = new(C.ImGuiDebugAllocEntry)
+	FieldFrameCount := self.FieldFrameCount
+
+	result.FrameCount = C.int(FieldFrameCount)
+	FieldAllocCount := self.FieldAllocCount
+
+	result.AllocCount = C.ImS16(FieldAllocCount)
+	FieldFreeCount := self.FieldFreeCount
+
+	result.FreeCount = C.ImS16(FieldFreeCount)
+	releaseFn = func() {
+	}
+	return result, releaseFn
+}
+
+func (self DebugAllocEntry) c() (result C.ImGuiDebugAllocEntry, fin func()) {
+	resultPtr, finFn := self.handle()
+	return *resultPtr, finFn
+}
+
+func newDebugAllocEntryFromC(cvalue *C.ImGuiDebugAllocEntry) *DebugAllocEntry {
+	result := new(DebugAllocEntry)
+	result.FieldFrameCount = int32(cvalue.FrameCount)
+	result.FieldAllocCount = int(cvalue.AllocCount)
+	result.FieldFreeCount = int(cvalue.FreeCount)
+	return result
+}
+
+type DebugAllocInfo struct {
+	// TODO: contains unsupported fields
+	data unsafe.Pointer
+}
+
+func (self DebugAllocInfo) handle() (result *C.ImGuiDebugAllocInfo, releaseFn func()) {
+	result = (*C.ImGuiDebugAllocInfo)(self.data)
+	return result, func() {}
+}
+
+func (self DebugAllocInfo) c() (result C.ImGuiDebugAllocInfo, fin func()) {
+	resultPtr, finFn := self.handle()
+	return *resultPtr, finFn
+}
+
+func newDebugAllocInfoFromC(cvalue *C.ImGuiDebugAllocInfo) *DebugAllocInfo {
+	result := new(DebugAllocInfo)
+	result.data = unsafe.Pointer(cvalue)
+	return result
+}
+
 type DockContext struct {
 	// TODO: contains unsupported fields
 	data unsafe.Pointer
@@ -835,6 +891,7 @@ type GroupData struct {
 	FieldWindowID                           ID
 	FieldBackupCursorPos                    Vec2
 	FieldBackupCursorMaxPos                 Vec2
+	FieldBackupCursorPosPrevLine            Vec2
 	FieldBackupIndent                       Vec1
 	FieldBackupGroupOffset                  Vec1
 	FieldBackupCurrLineSize                 Vec2
@@ -842,6 +899,7 @@ type GroupData struct {
 	FieldBackupActiveIdIsAlive              ID
 	FieldBackupActiveIdPreviousFrameIsAlive bool
 	FieldBackupHoveredIdIsAlive             bool
+	FieldBackupIsSameLine                   bool
 	FieldEmitItem                           bool
 }
 
@@ -856,6 +914,9 @@ func (self GroupData) handle() (result *C.ImGuiGroupData, releaseFn func()) {
 	FieldBackupCursorMaxPos := self.FieldBackupCursorMaxPos
 
 	result.BackupCursorMaxPos = FieldBackupCursorMaxPos.toC()
+	FieldBackupCursorPosPrevLine := self.FieldBackupCursorPosPrevLine
+
+	result.BackupCursorPosPrevLine = FieldBackupCursorPosPrevLine.toC()
 	FieldBackupIndent := self.FieldBackupIndent
 	FieldBackupIndentArg, FieldBackupIndentFin := FieldBackupIndent.c()
 	result.BackupIndent = FieldBackupIndentArg
@@ -877,6 +938,9 @@ func (self GroupData) handle() (result *C.ImGuiGroupData, releaseFn func()) {
 	FieldBackupHoveredIdIsAlive := self.FieldBackupHoveredIdIsAlive
 
 	result.BackupHoveredIdIsAlive = C.bool(FieldBackupHoveredIdIsAlive)
+	FieldBackupIsSameLine := self.FieldBackupIsSameLine
+
+	result.BackupIsSameLine = C.bool(FieldBackupIsSameLine)
 	FieldEmitItem := self.FieldEmitItem
 
 	result.EmitItem = C.bool(FieldEmitItem)
@@ -897,6 +961,7 @@ func newGroupDataFromC(cvalue *C.ImGuiGroupData) *GroupData {
 	result.FieldWindowID = ID(cvalue.WindowID)
 	result.FieldBackupCursorPos = *(&Vec2{}).fromC(cvalue.BackupCursorPos)
 	result.FieldBackupCursorMaxPos = *(&Vec2{}).fromC(cvalue.BackupCursorMaxPos)
+	result.FieldBackupCursorPosPrevLine = *(&Vec2{}).fromC(cvalue.BackupCursorPosPrevLine)
 	result.FieldBackupIndent = *newVec1FromC(func() *C.ImVec1 { result := cvalue.BackupIndent; return &result }())
 
 	result.FieldBackupGroupOffset = *newVec1FromC(func() *C.ImVec1 { result := cvalue.BackupGroupOffset; return &result }())
@@ -906,7 +971,68 @@ func newGroupDataFromC(cvalue *C.ImGuiGroupData) *GroupData {
 	result.FieldBackupActiveIdIsAlive = ID(cvalue.BackupActiveIdIsAlive)
 	result.FieldBackupActiveIdPreviousFrameIsAlive = cvalue.BackupActiveIdPreviousFrameIsAlive == C.bool(true)
 	result.FieldBackupHoveredIdIsAlive = cvalue.BackupHoveredIdIsAlive == C.bool(true)
+	result.FieldBackupIsSameLine = cvalue.BackupIsSameLine == C.bool(true)
 	result.FieldEmitItem = cvalue.EmitItem == C.bool(true)
+	return result
+}
+
+// State for ID Stack tool queries
+type IDStackTool struct {
+	FieldLastActiveFrame         int32
+	FieldStackLevel              int32 // -1: query stack and resize Results, >= 0: individual stack level
+	FieldQueryId                 ID    // ID to query details for
+	FieldResults                 Vector[*StackLevelInfo]
+	FieldCopyToClipboardOnCtrlC  bool
+	FieldCopyToClipboardLastTime float32
+}
+
+func (self IDStackTool) handle() (result *C.ImGuiIDStackTool, releaseFn func()) {
+	result = new(C.ImGuiIDStackTool)
+	FieldLastActiveFrame := self.FieldLastActiveFrame
+
+	result.LastActiveFrame = C.int(FieldLastActiveFrame)
+	FieldStackLevel := self.FieldStackLevel
+
+	result.StackLevel = C.int(FieldStackLevel)
+	FieldQueryId := self.FieldQueryId
+
+	result.QueryId = C.ImGuiID(FieldQueryId)
+	FieldResults := self.FieldResults
+	FieldResultsData := FieldResults.Data
+	FieldResultsDataArg, FieldResultsDataFin := FieldResultsData.handle()
+	FieldResultsVecArg := new(C.ImVector_ImGuiStackLevelInfo)
+	FieldResultsVecArg.Size = C.int(FieldResults.Size)
+	FieldResultsVecArg.Capacity = C.int(FieldResults.Capacity)
+	FieldResultsVecArg.Data = FieldResultsDataArg
+	FieldResults.pinner.Pin(FieldResultsVecArg.Data)
+
+	result.Results = *FieldResultsVecArg
+	FieldCopyToClipboardOnCtrlC := self.FieldCopyToClipboardOnCtrlC
+
+	result.CopyToClipboardOnCtrlC = C.bool(FieldCopyToClipboardOnCtrlC)
+	FieldCopyToClipboardLastTime := self.FieldCopyToClipboardLastTime
+
+	result.CopyToClipboardLastTime = C.float(FieldCopyToClipboardLastTime)
+	releaseFn = func() {
+		FieldResultsDataFin()
+		FieldResults.pinner.Unpin()
+	}
+	return result, releaseFn
+}
+
+func (self IDStackTool) c() (result C.ImGuiIDStackTool, fin func()) {
+	resultPtr, finFn := self.handle()
+	return *resultPtr, finFn
+}
+
+func newIDStackToolFromC(cvalue *C.ImGuiIDStackTool) *IDStackTool {
+	result := new(IDStackTool)
+	result.FieldLastActiveFrame = int32(cvalue.LastActiveFrame)
+	result.FieldStackLevel = int32(cvalue.StackLevel)
+	result.FieldQueryId = ID(cvalue.QueryId)
+	result.FieldResults = newVectorFromC(cvalue.Results.Size, cvalue.Results.Capacity, newStackLevelInfoFromC(cvalue.Results.Data))
+	result.FieldCopyToClipboardOnCtrlC = cvalue.CopyToClipboardOnCtrlC == C.bool(true)
+	result.FieldCopyToClipboardLastTime = float32(cvalue.CopyToClipboardLastTime)
 	return result
 }
 
@@ -1864,7 +1990,7 @@ func newMenuColumnsFromC(cvalue *C.ImGuiMenuColumns) *MenuColumns {
 
 type MetricsConfig struct {
 	FieldShowDebugLog                 bool
-	FieldShowStackTool                bool
+	FieldShowIDStackTool              bool
 	FieldShowWindowsRects             bool
 	FieldShowWindowsBeginOrder        bool
 	FieldShowTablesRects              bool
@@ -1881,9 +2007,9 @@ func (self MetricsConfig) handle() (result *C.ImGuiMetricsConfig, releaseFn func
 	FieldShowDebugLog := self.FieldShowDebugLog
 
 	result.ShowDebugLog = C.bool(FieldShowDebugLog)
-	FieldShowStackTool := self.FieldShowStackTool
+	FieldShowIDStackTool := self.FieldShowIDStackTool
 
-	result.ShowStackTool = C.bool(FieldShowStackTool)
+	result.ShowIDStackTool = C.bool(FieldShowIDStackTool)
 	FieldShowWindowsRects := self.FieldShowWindowsRects
 
 	result.ShowWindowsRects = C.bool(FieldShowWindowsRects)
@@ -1924,7 +2050,7 @@ func (self MetricsConfig) c() (result C.ImGuiMetricsConfig, fin func()) {
 func newMetricsConfigFromC(cvalue *C.ImGuiMetricsConfig) *MetricsConfig {
 	result := new(MetricsConfig)
 	result.FieldShowDebugLog = cvalue.ShowDebugLog == C.bool(true)
-	result.FieldShowStackTool = cvalue.ShowStackTool == C.bool(true)
+	result.FieldShowIDStackTool = cvalue.ShowIDStackTool == C.bool(true)
 	result.FieldShowWindowsRects = cvalue.ShowWindowsRects == C.bool(true)
 	result.FieldShowWindowsBeginOrder = cvalue.ShowWindowsBeginOrder == C.bool(true)
 	result.FieldShowTablesRects = cvalue.ShowTablesRects == C.bool(true)
@@ -2634,66 +2760,6 @@ func newStackSizesFromC(cvalue *C.ImGuiStackSizes) *StackSizes {
 	return result
 }
 
-// State for Stack tool queries
-type StackTool struct {
-	FieldLastActiveFrame         int32
-	FieldStackLevel              int32 // -1: query stack and resize Results, >= 0: individual stack level
-	FieldQueryId                 ID    // ID to query details for
-	FieldResults                 Vector[*StackLevelInfo]
-	FieldCopyToClipboardOnCtrlC  bool
-	FieldCopyToClipboardLastTime float32
-}
-
-func (self StackTool) handle() (result *C.ImGuiStackTool, releaseFn func()) {
-	result = new(C.ImGuiStackTool)
-	FieldLastActiveFrame := self.FieldLastActiveFrame
-
-	result.LastActiveFrame = C.int(FieldLastActiveFrame)
-	FieldStackLevel := self.FieldStackLevel
-
-	result.StackLevel = C.int(FieldStackLevel)
-	FieldQueryId := self.FieldQueryId
-
-	result.QueryId = C.ImGuiID(FieldQueryId)
-	FieldResults := self.FieldResults
-	FieldResultsData := FieldResults.Data
-	FieldResultsDataArg, FieldResultsDataFin := FieldResultsData.handle()
-	FieldResultsVecArg := new(C.ImVector_ImGuiStackLevelInfo)
-	FieldResultsVecArg.Size = C.int(FieldResults.Size)
-	FieldResultsVecArg.Capacity = C.int(FieldResults.Capacity)
-	FieldResultsVecArg.Data = FieldResultsDataArg
-	FieldResults.pinner.Pin(FieldResultsVecArg.Data)
-
-	result.Results = *FieldResultsVecArg
-	FieldCopyToClipboardOnCtrlC := self.FieldCopyToClipboardOnCtrlC
-
-	result.CopyToClipboardOnCtrlC = C.bool(FieldCopyToClipboardOnCtrlC)
-	FieldCopyToClipboardLastTime := self.FieldCopyToClipboardLastTime
-
-	result.CopyToClipboardLastTime = C.float(FieldCopyToClipboardLastTime)
-	releaseFn = func() {
-		FieldResultsDataFin()
-		FieldResults.pinner.Unpin()
-	}
-	return result, releaseFn
-}
-
-func (self StackTool) c() (result C.ImGuiStackTool, fin func()) {
-	resultPtr, finFn := self.handle()
-	return *resultPtr, finFn
-}
-
-func newStackToolFromC(cvalue *C.ImGuiStackTool) *StackTool {
-	result := new(StackTool)
-	result.FieldLastActiveFrame = int32(cvalue.LastActiveFrame)
-	result.FieldStackLevel = int32(cvalue.StackLevel)
-	result.FieldQueryId = ID(cvalue.QueryId)
-	result.FieldResults = newVectorFromC(cvalue.Results.Size, cvalue.Results.Capacity, newStackLevelInfoFromC(cvalue.Results.Data))
-	result.FieldCopyToClipboardOnCtrlC = cvalue.CopyToClipboardOnCtrlC == C.bool(true)
-	result.FieldCopyToClipboardLastTime = float32(cvalue.CopyToClipboardLastTime)
-	return result
-}
-
 // Helper: Key->Value storage
 // Typically you don't have to worry about this since a storage is held within each Window.
 // We use it to e.g. store collapse state for a tree (Int 0/1)
@@ -3211,13 +3277,14 @@ func newTableColumnSortSpecsFromC(cvalue *C.ImGuiTableColumnSortSpecs) *TableCol
 }
 
 // Per-instance data that needs preserving across frames (seemingly most others do not need to be preserved aside from debug needs. Does that means they could be moved to ImGuiTableTempData?)
+// sizeof() ~ 24 bytes
 type TableInstanceData struct {
-	FieldTableInstanceID    ID
-	FieldLastOuterHeight    float32 // Outer height from last frame
-	FieldLastFirstRowHeight float32 // Height of first row from last frame (FIXME: this is used as "header height" and may be reworked)
-	FieldLastFrozenHeight   float32 // Height of frozen section from last frame
-	FieldHoveredRowLast     int32   // Index of row which was hovered last frame.
-	FieldHoveredRowNext     int32   // Index of row hovered this frame, set after encountering it.
+	FieldTableInstanceID         ID
+	FieldLastOuterHeight         float32 // Outer height from last frame
+	FieldLastTopHeadersRowHeight float32 // Height of first consecutive header rows from last frame (FIXME: this is used assuming consecutive headers are in same frozen set)
+	FieldLastFrozenHeight        float32 // Height of frozen section from last frame
+	FieldHoveredRowLast          int32   // Index of row which was hovered last frame.
+	FieldHoveredRowNext          int32   // Index of row hovered this frame, set after encountering it.
 }
 
 func (self TableInstanceData) handle() (result *C.ImGuiTableInstanceData, releaseFn func()) {
@@ -3228,9 +3295,9 @@ func (self TableInstanceData) handle() (result *C.ImGuiTableInstanceData, releas
 	FieldLastOuterHeight := self.FieldLastOuterHeight
 
 	result.LastOuterHeight = C.float(FieldLastOuterHeight)
-	FieldLastFirstRowHeight := self.FieldLastFirstRowHeight
+	FieldLastTopHeadersRowHeight := self.FieldLastTopHeadersRowHeight
 
-	result.LastFirstRowHeight = C.float(FieldLastFirstRowHeight)
+	result.LastTopHeadersRowHeight = C.float(FieldLastTopHeadersRowHeight)
 	FieldLastFrozenHeight := self.FieldLastFrozenHeight
 
 	result.LastFrozenHeight = C.float(FieldLastFrozenHeight)
@@ -3254,7 +3321,7 @@ func newTableInstanceDataFromC(cvalue *C.ImGuiTableInstanceData) *TableInstanceD
 	result := new(TableInstanceData)
 	result.FieldTableInstanceID = ID(cvalue.TableInstanceID)
 	result.FieldLastOuterHeight = float32(cvalue.LastOuterHeight)
-	result.FieldLastFirstRowHeight = float32(cvalue.LastFirstRowHeight)
+	result.FieldLastTopHeadersRowHeight = float32(cvalue.LastTopHeadersRowHeight)
 	result.FieldLastFrozenHeight = float32(cvalue.LastFrozenHeight)
 	result.FieldHoveredRowLast = int32(cvalue.HoveredRowLast)
 	result.FieldHoveredRowNext = int32(cvalue.HoveredRowNext)
@@ -3355,10 +3422,11 @@ func newTableSortSpecsFromC(cvalue *C.ImGuiTableSortSpecs) *TableSortSpecs {
 // Transient data that are only needed between BeginTable() and EndTable(), those buffers are shared (1 per level of stacked table).
 // - Accessing those requires chasing an extra pointer so for very frequently used data we leave them in the main table structure.
 // - We also leave out of this structure data that tend to be particularly useful for debugging/metrics.
-// sizeof() ~ 112 bytes.
+// sizeof() ~ 120 bytes.
 type TableTempData struct {
 	FieldTableIndex                   int32   // Index in g.Tables.Buf[] pool
 	FieldLastTimeActive               float32 // Last timestamp this structure was used
+	FieldAngledheadersExtraWidth      float32 // Used in EndTable()
 	FieldUserOuterSize                Vec2    // outer_size.x passed to BeginTable()
 	FieldDrawSplitter                 DrawListSplitter
 	FieldHostBackupWorkRect           Rect    // Backup of InnerWindow->WorkRect at the end of BeginTable()
@@ -3380,6 +3448,9 @@ func (self TableTempData) handle() (result *C.ImGuiTableTempData, releaseFn func
 	FieldLastTimeActive := self.FieldLastTimeActive
 
 	result.LastTimeActive = C.float(FieldLastTimeActive)
+	FieldAngledheadersExtraWidth := self.FieldAngledheadersExtraWidth
+
+	result.AngledheadersExtraWidth = C.float(FieldAngledheadersExtraWidth)
 	FieldUserOuterSize := self.FieldUserOuterSize
 
 	result.UserOuterSize = FieldUserOuterSize.toC()
@@ -3427,6 +3498,7 @@ func newTableTempDataFromC(cvalue *C.ImGuiTableTempData) *TableTempData {
 	result := new(TableTempData)
 	result.FieldTableIndex = int32(cvalue.TableIndex)
 	result.FieldLastTimeActive = float32(cvalue.LastTimeActive)
+	result.FieldAngledheadersExtraWidth = float32(cvalue.AngledheadersExtraWidth)
 	result.FieldUserOuterSize = *(&Vec2{}).fromC(cvalue.UserOuterSize)
 	result.FieldDrawSplitter = *newDrawListSplitterFromC(func() *C.ImDrawListSplitter { result := cvalue.DrawSplitter; return &result }())
 

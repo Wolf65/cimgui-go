@@ -163,8 +163,8 @@ ImGuiID wrap_igImHashData(const void* data,size_t data_size) { return igImHashDa
 ImGuiID wrap_igImHashStr(const char* data) { return igImHashStr(data,0,0); }
 int wrap_igImTextStrFromUtf8(ImWchar* out_buf,int out_buf_size,const char* in_text,const char* in_text_end) { return igImTextStrFromUtf8(out_buf,out_buf_size,in_text,in_text_end,NULL); }
 void wrap_igImage(ImTextureID user_texture_id,const ImVec2 size) { igImage(user_texture_id,size,(ImVec2){.x=0, .y=0},(ImVec2){.x=1, .y=1},(ImVec4){.x=1, .y=1, .z=1, .w=1},(ImVec4){.x=0, .y=0, .z=0, .w=0}); }
-bool wrap_igImageButton(const char* str_id,ImTextureID user_texture_id,const ImVec2 size) { return igImageButton(str_id,user_texture_id,size,(ImVec2){.x=0, .y=0},(ImVec2){.x=1, .y=1},(ImVec4){.x=0, .y=0, .z=0, .w=0},(ImVec4){.x=1, .y=1, .z=1, .w=1}); }
-bool wrap_igImageButtonEx(ImGuiID id,ImTextureID texture_id,const ImVec2 size,const ImVec2 uv0,const ImVec2 uv1,const ImVec4 bg_col,const ImVec4 tint_col) { return igImageButtonEx(id,texture_id,size,uv0,uv1,bg_col,tint_col,0); }
+bool wrap_igImageButton(const char* str_id,ImTextureID user_texture_id,const ImVec2 image_size) { return igImageButton(str_id,user_texture_id,image_size,(ImVec2){.x=0, .y=0},(ImVec2){.x=1, .y=1},(ImVec4){.x=0, .y=0, .z=0, .w=0},(ImVec4){.x=1, .y=1, .z=1, .w=1}); }
+bool wrap_igImageButtonEx(ImGuiID id,ImTextureID texture_id,const ImVec2 image_size,const ImVec2 uv0,const ImVec2 uv1,const ImVec4 bg_col,const ImVec4 tint_col) { return igImageButtonEx(id,texture_id,image_size,uv0,uv1,bg_col,tint_col,0); }
 void wrap_igIndent() { igIndent(0.0f); }
 bool wrap_igInputDouble(const char* label,double* v) { return igInputDouble(label,v,0.0,0.0,"%.6f",0); }
 bool wrap_igInputFloat(const char* label,float* v) { return igInputFloat(label,v,0.0f,0.0f,"%.3f",0); }
@@ -184,6 +184,7 @@ bool wrap_igInputTextWithHint(const char* label,const char* hint,char* buf,size_
 bool wrap_igInvisibleButton(const char* str_id,const ImVec2 size) { return igInvisibleButton(str_id,size,0); }
 bool wrap_igIsItemClicked() { return igIsItemClicked(0); }
 bool wrap_igIsItemHovered() { return igIsItemHovered(0); }
+bool wrap_igIsKeyChordPressed(ImGuiKeyChord key_chord,ImGuiID owner_id) { return igIsKeyChordPressed(key_chord,owner_id,0); }
 bool wrap_igIsKeyPressedMap(ImGuiKey key) { return igIsKeyPressedMap(key,true); }
 bool wrap_igIsKeyPressed_Bool(ImGuiKey key) { return igIsKeyPressed_Bool(key,true); }
 bool wrap_igIsKeyPressed_ID(ImGuiKey key,ImGuiID owner_id) { return igIsKeyPressed_ID(key,owner_id,0); }
@@ -268,8 +269,8 @@ bool wrap_igShortcut(ImGuiKeyChord key_chord) { return igShortcut(key_chord,0,0)
 void wrap_igShowAboutWindow() { igShowAboutWindow(NULL); }
 void wrap_igShowDebugLogWindow() { igShowDebugLogWindow(NULL); }
 void wrap_igShowDemoWindow() { igShowDemoWindow(NULL); }
+void wrap_igShowIDStackToolWindow() { igShowIDStackToolWindow(NULL); }
 void wrap_igShowMetricsWindow() { igShowMetricsWindow(NULL); }
-void wrap_igShowStackToolWindow() { igShowStackToolWindow(NULL); }
 void wrap_igShowStyleEditor() { igShowStyleEditor(NULL); }
 bool wrap_igSliderAngle(const char* label,float* v_rad) { return igSliderAngle(label,v_rad,-360.0f,+360.0f,"%.0f deg",0); }
 bool wrap_igSliderFloat(const char* label,float* v,float v_min,float v_max) { return igSliderFloat(label,v,v_min,v_max,"%.3f",0); }
@@ -287,6 +288,7 @@ void wrap_igStyleColorsClassic() { igStyleColorsClassic(NULL); }
 void wrap_igStyleColorsDark() { igStyleColorsDark(NULL); }
 void wrap_igStyleColorsLight() { igStyleColorsLight(NULL); }
 bool wrap_igTabItemButton(const char* label) { return igTabItemButton(label,0); }
+void wrap_igTableAngledHeadersRowEx(float angle) { igTableAngledHeadersRowEx(angle,0.0f); }
 ImGuiTableColumnFlags wrap_igTableGetColumnFlags() { return igTableGetColumnFlags(-1); }
 const char* wrap_igTableGetColumnName_Int() { return igTableGetColumnName_Int(-1); }
 ImGuiID wrap_igTableGetColumnResizeID(ImGuiTable* table,int column_n) { return igTableGetColumnResizeID(table,column_n,0); }

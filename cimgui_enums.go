@@ -336,8 +336,10 @@ const (
 	// Display on the preview box without the square arrow button
 	ComboFlagsNoArrowButton = 32
 	// Display only a square arrow button
-	ComboFlagsNoPreview  = 64
-	ComboFlagsHeightMask = 30
+	ComboFlagsNoPreview = 64
+	// Width dynamically calculated from preview contents
+	ComboFlagsWidthFitPreview = 128
+	ComboFlagsHeightMask      = 30
 )
 
 // Enumeration for ImGui::SetWindow***(), SetNextWindow***(), SetNextItem***() functions
@@ -966,110 +968,125 @@ const (
 	KeyF10        = 581
 	KeyF11        = 582
 	KeyF12        = 583
+	KeyF13        = 584
+	KeyF14        = 585
+	KeyF15        = 586
+	KeyF16        = 587
+	KeyF17        = 588
+	KeyF18        = 589
+	KeyF19        = 590
+	KeyF20        = 591
+	KeyF21        = 592
+	KeyF22        = 593
+	KeyF23        = 594
+	KeyF24        = 595
 	// '
-	KeyApostrophe = 584
+	KeyApostrophe = 596
 	// ,
-	KeyComma = 585
+	KeyComma = 597
 	// -
-	KeyMinus = 586
+	KeyMinus = 598
 	// .
-	KeyPeriod = 587
+	KeyPeriod = 599
 	// /
-	KeySlash = 588
+	KeySlash = 600
 	// ;
-	KeySemicolon = 589
+	KeySemicolon = 601
 	// =
-	KeyEqual = 590
+	KeyEqual = 602
 	// [
-	KeyLeftBracket = 591
+	KeyLeftBracket = 603
 	// \ (this text inhibit multiline comment caused by backslash)
-	KeyBackslash = 592
+	KeyBackslash = 604
 	// ]
-	KeyRightBracket = 593
+	KeyRightBracket = 605
 	// `
-	KeyGraveAccent    = 594
-	KeyCapsLock       = 595
-	KeyScrollLock     = 596
-	KeyNumLock        = 597
-	KeyPrintScreen    = 598
-	KeyPause          = 599
-	KeyKeypad0        = 600
-	KeyKeypad1        = 601
-	KeyKeypad2        = 602
-	KeyKeypad3        = 603
-	KeyKeypad4        = 604
-	KeyKeypad5        = 605
-	KeyKeypad6        = 606
-	KeyKeypad7        = 607
-	KeyKeypad8        = 608
-	KeyKeypad9        = 609
-	KeyKeypadDecimal  = 610
-	KeyKeypadDivide   = 611
-	KeyKeypadMultiply = 612
-	KeyKeypadSubtract = 613
-	KeyKeypadAdd      = 614
-	KeyKeypadEnter    = 615
-	KeyKeypadEqual    = 616
+	KeyGraveAccent    = 606
+	KeyCapsLock       = 607
+	KeyScrollLock     = 608
+	KeyNumLock        = 609
+	KeyPrintScreen    = 610
+	KeyPause          = 611
+	KeyKeypad0        = 612
+	KeyKeypad1        = 613
+	KeyKeypad2        = 614
+	KeyKeypad3        = 615
+	KeyKeypad4        = 616
+	KeyKeypad5        = 617
+	KeyKeypad6        = 618
+	KeyKeypad7        = 619
+	KeyKeypad8        = 620
+	KeyKeypad9        = 621
+	KeyKeypadDecimal  = 622
+	KeyKeypadDivide   = 623
+	KeyKeypadMultiply = 624
+	KeyKeypadSubtract = 625
+	KeyKeypadAdd      = 626
+	KeyKeypadEnter    = 627
+	KeyKeypadEqual    = 628
+	// Available on some keyboard/mouses. Often referred as "Browser Back"
+	KeyAppBack    = 629
+	KeyAppForward = 630
 	// Menu (Xbox)      + (Switch)   Start/Options (PS)
-	KeyGamepadStart = 617
+	KeyGamepadStart = 631
 	// View (Xbox)      - (Switch)   Share (PS)
-	KeyGamepadBack = 618
+	KeyGamepadBack = 632
 	// X (Xbox)         Y (Switch)   Square (PS)        // Tap: Toggle Menu. Hold: Windowing mode (Focus/Move/Resize windows)
-	KeyGamepadFaceLeft = 619
+	KeyGamepadFaceLeft = 633
 	// B (Xbox)         A (Switch)   Circle (PS)        // Cancel / Close / Exit
-	KeyGamepadFaceRight = 620
+	KeyGamepadFaceRight = 634
 	// Y (Xbox)         X (Switch)   Triangle (PS)      // Text Input / On-screen Keyboard
-	KeyGamepadFaceUp = 621
+	KeyGamepadFaceUp = 635
 	// A (Xbox)         B (Switch)   Cross (PS)         // Activate / Open / Toggle / Tweak
-	KeyGamepadFaceDown = 622
+	KeyGamepadFaceDown = 636
 	// D-pad Left                                       // Move / Tweak / Resize Window (in Windowing mode)
-	KeyGamepadDpadLeft = 623
+	KeyGamepadDpadLeft = 637
 	// D-pad Right                                      // Move / Tweak / Resize Window (in Windowing mode)
-	KeyGamepadDpadRight = 624
+	KeyGamepadDpadRight = 638
 	// D-pad Up                                         // Move / Tweak / Resize Window (in Windowing mode)
-	KeyGamepadDpadUp = 625
+	KeyGamepadDpadUp = 639
 	// D-pad Down                                       // Move / Tweak / Resize Window (in Windowing mode)
-	KeyGamepadDpadDown = 626
+	KeyGamepadDpadDown = 640
 	// L Bumper (Xbox)  L (Switch)   L1 (PS)            // Tweak Slower / Focus Previous (in Windowing mode)
-	KeyGamepadL1 = 627
+	KeyGamepadL1 = 641
 	// R Bumper (Xbox)  R (Switch)   R1 (PS)            // Tweak Faster / Focus Next (in Windowing mode)
-	KeyGamepadR1 = 628
+	KeyGamepadR1 = 642
 	// L Trig. (Xbox)   ZL (Switch)  L2 (PS) [Analog]
-	KeyGamepadL2 = 629
+	KeyGamepadL2 = 643
 	// R Trig. (Xbox)   ZR (Switch)  R2 (PS) [Analog]
-	KeyGamepadR2 = 630
+	KeyGamepadR2 = 644
 	// L Stick (Xbox)   L3 (Switch)  L3 (PS)
-	KeyGamepadL3 = 631
+	KeyGamepadL3 = 645
 	// R Stick (Xbox)   R3 (Switch)  R3 (PS)
-	KeyGamepadR3 = 632
+	KeyGamepadR3 = 646
 	// [Analog]                                         // Move Window (in Windowing mode)
-	KeyGamepadLStickLeft = 633
+	KeyGamepadLStickLeft = 647
 	// [Analog]                                         // Move Window (in Windowing mode)
-	KeyGamepadLStickRight = 634
+	KeyGamepadLStickRight = 648
 	// [Analog]                                         // Move Window (in Windowing mode)
-	KeyGamepadLStickUp = 635
+	KeyGamepadLStickUp = 649
 	// [Analog]                                         // Move Window (in Windowing mode)
-	KeyGamepadLStickDown = 636
+	KeyGamepadLStickDown = 650
 	// [Analog]
-	KeyGamepadRStickLeft = 637
+	KeyGamepadRStickLeft = 651
 	// [Analog]
-	KeyGamepadRStickRight = 638
+	KeyGamepadRStickRight = 652
 	// [Analog]
-	KeyGamepadRStickUp = 639
+	KeyGamepadRStickUp = 653
 	// [Analog]
-	KeyGamepadRStickDown   = 640
-	KeyMouseLeft           = 641
-	KeyMouseRight          = 642
-	KeyMouseMiddle         = 643
-	KeyMouseX1             = 644
-	KeyMouseX2             = 645
-	KeyMouseWheelX         = 646
-	KeyMouseWheelY         = 647
-	KeyReservedForModCtrl  = 648
-	KeyReservedForModShift = 649
-	KeyReservedForModAlt   = 650
-	KeyReservedForModSuper = 651
-	KeyCOUNT               = 652
+	KeyGamepadRStickDown   = 654
+	KeyMouseLeft           = 655
+	KeyMouseRight          = 656
+	KeyMouseMiddle         = 657
+	KeyMouseX1             = 658
+	KeyMouseX2             = 659
+	KeyMouseWheelX         = 660
+	KeyMouseWheelY         = 661
+	KeyReservedForModCtrl  = 662
+	KeyReservedForModShift = 663
+	KeyReservedForModAlt   = 664
+	KeyReservedForModSuper = 665
+	KeyCOUNT               = 666
 	ModNone                = 0
 	// Ctrl
 	ModCtrl = 4096
@@ -1084,10 +1101,10 @@ const (
 	// 5-bits
 	ModMask          = 63488
 	KeyNamedKeyBEGIN = 512
-	KeyNamedKeyEND   = 652
-	KeyNamedKeyCOUNT = 140
+	KeyNamedKeyEND   = 666
+	KeyNamedKeyCOUNT = 154
 	// Size of KeysData[]: hold legacy 0..512 keycodes + named keys
-	KeyKeysDataSIZE = 652
+	KeyKeysDataSIZE = 666
 	// Accesses to io.KeysData[] must use (key - ImGuiKey_KeysData_OFFSET) index.
 	KeyKeysDataOFFSET = 0
 )
@@ -1107,17 +1124,18 @@ const (
 type LocKey int32
 
 const (
-	LocKeyVersionStr             = 0
-	LocKeyTableSizeOne           = 1
-	LocKeyTableSizeAllFit        = 2
-	LocKeyTableSizeAllDefault    = 3
-	LocKeyTableResetOrder        = 4
-	LocKeyWindowingMainMenuBar   = 5
-	LocKeyWindowingPopup         = 6
-	LocKeyWindowingUntitled      = 7
-	LocKeyDockingHideTabBar      = 8
-	LocKeyDockingHoldShiftToDock = 9
-	LocKeyCOUNT                  = 10
+	LocKeyVersionStr                    = 0
+	LocKeyTableSizeOne                  = 1
+	LocKeyTableSizeAllFit               = 2
+	LocKeyTableSizeAllDefault           = 3
+	LocKeyTableResetOrder               = 4
+	LocKeyWindowingMainMenuBar          = 5
+	LocKeyWindowingPopup                = 6
+	LocKeyWindowingUntitled             = 7
+	LocKeyDockingHideTabBar             = 8
+	LocKeyDockingHoldShiftToDock        = 9
+	LocKeyDockingDragToUndockOrMoveNode = 10
+	LocKeyCOUNT                         = 11
 )
 
 // original name: ImGuiLogType
@@ -1421,7 +1439,7 @@ const (
 	SelectableFlagsNone = 0
 	// Clicking this doesn't close parent popup window
 	SelectableFlagsDontClosePopups = 1
-	// Selectable frame can span all columns (text will still fit in current column)
+	// Frame will span all columns of its container table (text will still fit in current column)
 	SelectableFlagsSpanAllColumns = 2
 	// Generate press events on double clicks too
 	SelectableFlagsAllowDoubleClick = 4
@@ -1690,7 +1708,7 @@ const (
 	TableColumnFlagsNoSortAscending = 1024
 	// Disable ability to sort in the descending direction.
 	TableColumnFlagsNoSortDescending = 2048
-	// TableHeadersRow() will not submit label for this column. Convenient for some small columns. Name will still appear in context menu.
+	// TableHeadersRow() will not submit horizontal label for this column. Convenient for some small columns. Name will still appear in context menu or in angled headers.
 	TableColumnFlagsNoHeaderLabel = 4096
 	// Disable header text width contribution to automatic column width.
 	TableColumnFlagsNoHeaderWidth = 8192
@@ -1702,6 +1720,8 @@ const (
 	TableColumnFlagsIndentEnable = 65536
 	// Ignore current Indent value when entering cell (default for columns > 0). Indentation changes _within_ the cell will still be honored.
 	TableColumnFlagsIndentDisable = 131072
+	// TableHeadersRow() will submit an angled header row for this column. Note this will add an extra row.
+	TableColumnFlagsAngledHeader = 262144
 	// Status: is enabled == not hidden by user/api (referred to as "Hide" in _DefaultHide and _NoHide) flags.
 	TableColumnFlagsIsEnabled = 16777216
 	// Status: is visible == is enabled AND not clipped by scrolling.
@@ -1813,7 +1833,9 @@ const (
 	TableFlagsSortMulti = 67108864
 	// Allow no sorting, disable default sorting. TableGetSortSpecs() may return specs where (SpecsCount == 0).
 	TableFlagsSortTristate = 134217728
-	TableFlagsSizingMask   = 57344
+	// Highlight column headers when hovered (may evolve into a fuller highlight)
+	TableFlagsHighlightHoveredColumn = 268435456
+	TableFlagsSizingMask             = 57344
 )
 
 // Flags for ImGui::TableNextRow()
@@ -1885,8 +1907,10 @@ const (
 	TreeNodeFlagsSpanAvailWidth = 2048
 	// Extend hit box to the left-most and right-most edges (bypass the indented area).
 	TreeNodeFlagsSpanFullWidth = 4096
+	// Frame will span all columns of its container table (text will still fit in current column)
+	TreeNodeFlagsSpanAllColumns = 8192
 	// (WIP) Nav: left direction may move to this TreeNode() from any of its child (items submitted between TreeNode and TreePop)
-	TreeNodeFlagsNavLeftJumpsBackHere = 8192
+	TreeNodeFlagsNavLeftJumpsBackHere = 16384
 	TreeNodeFlagsCollapsingHeader     = 26
 )
 
